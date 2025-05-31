@@ -111,7 +111,7 @@ app.post("/wishlist/add", async (req, res) => {
             await user.save();
         }
 
-        res.json({ message: "Item added to wishlist", wishlist: user.wishlist });
+        res.json({ message: "Item added to wishlist", wishlist: user.wishlist || [] });
     } catch (error) {
         res.status(500).json({ error: "Error adding item to wishlist" });
     }

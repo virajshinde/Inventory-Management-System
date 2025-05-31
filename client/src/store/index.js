@@ -44,10 +44,9 @@ if (action.type === "DELETE_ITEM") {
     //         )
     //     };
     // }
-     if(action.type === "SET_WISHLIST"){ // Populate wishlist from backend
-            return { ...state, wishlist: action.payload };
-
-     }
+    if (action.type === "SET_WISHLIST") {
+    return { ...state, wishlist: Array.isArray(action.payload) ? action.payload : [] };
+}
     if (action.type === "ADD_TO_WISHLIST"){
         return { ...state, wishlist: [...state.wishlist, action.payload] 
     }
