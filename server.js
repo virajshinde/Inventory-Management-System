@@ -61,17 +61,20 @@ app.post("/login", async (req, res) => {
         res.status(500).json({ error: "Error logging in" });
     }
 });
-
 app.get("/user/:userId/wishlist", async (req, res) => {
     try {
         const user = await User.findById(req.params.userId).populate("wishlist");
-        if (!user) return res.status(404).json({ error: "User not found" });
-
-        res.json({ wishlist: user.wishlist });
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        console.log("Fetched Wishlist:", user.wishlist); // Debug Log
+        res.json({ wishlist: user.wishlist || [] }); // Ensure empty array instead of undefined
     } catch (error) {
+        console.error("Error fetching wishlist:", error);
         res.status(500).json({ error: "Error fetching wishlist" });
     }
 });
+
 
 app.post("/items/create", async (req, res) => {
     try {

@@ -21,6 +21,7 @@ export default function ItemList(){
     const token = localStorage.getItem("token");
     const userId = token ? jwtDecode(token).id : null;
 
+    console.log("User ID in frontend:", userId);
 
 
 const items = useSelector(state => state.item);
@@ -74,36 +75,45 @@ useEffect(() => {
         }
 
         const data = await response.json();
-        console.log("Wishlist response:", data); // ✅ Debugging log
-        
-        // ✅ Only dispatch after receiving a valid response
-        dispatch({ type: SET_WISHLIST, payload: Array.isArray(data.wishlist) ? data.wishlist : [] });
+        console.log("Wishlist response:", data);
+
+        // ✅ Dispatch just the new item instead of resetting the whole state
+        const newItem = items.find(item => item._id === itemId);
+        if (newItem) {
+            dispatch({ type: ADD_TO_WISHLIST, payload: newItem });
+        }
 
         alert("Item added to wishlist!");
     } catch (error) {
         console.error("Error adding to wishlist:", error);
     }
 };
-
 const removeFromWishlist = async (itemId) => {
-        try {
-            if (!userId) {
-                alert("Please log in to remove items from your wishlist!");
-                return;
-            }
-
-            await fetch("http://localhost:5000/wishlist/remove", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId, itemId }),
-            });
-
-            dispatch({ type: REMOVE_FROM_WISHLIST, payload: itemId });
-            alert("Item removed from wishlist!");
-        } catch (error) {
-            console.error("Error removing item from wishlist:", error);
+    try {
+        if (!userId) {
+            alert("Please log in to remove items from your wishlist!");
+            return;
         }
-    };
+
+        const response = await fetch("http://localhost:5000/wishlist/remove", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, itemId }),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to remove item");
+        }
+
+        const data = await response.json();
+        console.log("Updated wishlist after removal:", data.wishlist);
+        
+        dispatch({ type: SET_WISHLIST, payload: data.wishlist });
+
+    } catch (error) {
+        console.error("Error removing item from wishlist:", error);
+    }
+};
 
 
 const handleDelete = async (itemId) => {
@@ -146,19 +156,20 @@ return (
                     )}
 
                     <h2>Wishlist Items</h2>
-            {wishlist.length > 0 ? (
-                wishlist.map(itemId => {
-                    const item = items.find(i => i._id === itemId);
-                    return item ? (
-                        <div key={item._id}>
-                            <h3>{item.name}</h3>
-                            <button onClick={() => removeFromWishlist(item._id)}>Remove from Wishlist</button>
-                        </div>
-                    ) : null;
-                })
-            ) : (
-                <p>Your wishlist is empty.</p>
-            )}
+           {wishlist.length > 0 ? (
+    wishlist.map(item => (
+        item ? (
+            <div key={item._id}>
+                <h3>{item.name}</h3>
+                <button onClick={() => removeFromWishlist(item._id)}>Remove from Wishlist</button>
+            </div>
+        ) : null
+    ))
+) : (
+    <p>Your wishlist is empty.</p>
+)}
+
+
 
 
 

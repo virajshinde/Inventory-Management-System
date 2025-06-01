@@ -45,17 +45,33 @@ if (action.type === "DELETE_ITEM") {
     //     };
     // }
     if (action.type === "SET_WISHLIST") {
-    return { ...state, wishlist: Array.isArray(action.payload) ? action.payload : [] };
-}
-    if (action.type === "ADD_TO_WISHLIST"){
-        return { ...state, wishlist: [...state.wishlist, action.payload] 
-    }
+    return { 
+        ...state, 
+        wishlist: Array.isArray(action.payload) 
+            ? action.payload.map(item => ({ ...item, _id: item._id || item.id })) 
+            : [] 
+    };
 }
 
-    if(action.type=== "REMOVE_FROM_WISHLIST"){
-            return { ...state, wishlist: state.wishlist.filter((id) => id !== action.payload) };
-    }
+// if (action.type === "ADD_TO_WISHLIST") {
+//     return { 
+//         ...state, 
+//         wishlist: [...state.wishlist, action.payload] 
+//     };
+// }
+if (action.type === "ADD_TO_WISHLIST") { 
+    return {  
+        ...state,  
+        wishlist: [...state.wishlist, action.payload]  
+    };
+}
 
+if(action.type === "REMOVE_FROM_WISHLIST"){
+    return {
+        ...state,
+        wishlist: state.wishlist.filter(item => item._id !== action.payload) 
+    };
+}
     
 
 
