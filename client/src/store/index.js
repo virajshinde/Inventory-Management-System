@@ -7,6 +7,8 @@ export const REMOVE_FROM_WISHLIST = "REMOVE_FROM_WISHLIST";
 export const CREATE_ITEM = "CREATE_ITEM";
 export const SET_ITEMS = "SET_ITEMS";
 export const DELETE_ITEM = "DELETE_ITEM"
+export const UPDATE_ITEM = "UPDATE_ITEM"
+
 
 
 
@@ -65,6 +67,14 @@ if (action.type === "ADD_TO_WISHLIST") {
         wishlist: [...state.wishlist, action.payload]  
     };
 }
+
+if (action.type === "UPDATE_ITEM") {
+    return {
+        ...state,
+        item: state.item.map(item => item._id === action.payload._id ? action.payload : item),
+    };
+}    
+
 
 if(action.type === "REMOVE_FROM_WISHLIST"){
     return {

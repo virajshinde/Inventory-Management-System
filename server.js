@@ -97,6 +97,28 @@ app.get("/items", async (req, res) => {
     }
 });
 
+app.put("/items/update/:itemId", async (req, res) => {
+    try {
+        const { itemId } = req.params;
+        const { name, price, category } = req.body;
+        
+        const updatedItem = await Product.findByIdAndUpdate(
+            itemId,
+            { name, price, category },
+            { new: true }
+        );
+
+        if (!updatedItem) {
+            return res.status(404).json({ error: "Item not found" });
+        }
+
+        res.json({ message: "Item updated successfully!", updatedItem });
+    } catch (error) {
+        console.error("Error updating item:", error);
+        res.status(500).json({ error: "Error updating item" });
+    }
+});
+
 
 
 
